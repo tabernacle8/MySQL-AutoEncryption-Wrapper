@@ -44,6 +44,8 @@ db.query('SELECT * FROM users WHERE username = ?', ['username'], function(err, r
 This function takes in a SQL query string, an array of parameters, and a callback function.
 See `example.js` for more help 
 
+If you get an error titled: EVP_DecryptFinal_ex:bad decrypt, your encryption key does not match the one used to encrypt the data
+
 ## Restrictions
 
 This wrapper will cause problems if used on a pre-existing database that does not follow the conventions of this wrapper. All functions will work as expected if you use the wrapper from the start however.
