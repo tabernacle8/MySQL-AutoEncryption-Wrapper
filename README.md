@@ -46,9 +46,9 @@ See `example.js` for more help
 
 ## Restrictions
 
-Please note that comparison statements in your SQL queries will not function as expected if you use the automatic encryption provided by this wrapper. The reason being, the wrapper encrypts parameters which would disrupt the normal comparison operation in SQL.
+This wrapper will cause problems if used on a pre-existing database that does not follow the conventions of this wrapper. All functions will work as expected if you use the wrapper from the start however.
 
-In addition, this wrapper may not work correctly if the columns in your database table are not designed to hold strings or have a character length limit that is too small for the encrypted data. Ensure your tables can accommodate nvarchar or similar data types and have sufficient length.
+In addition, this wrapper may not work correctly if the columns in your database table are not designed to hold strings or have a character length limit that is too small for the encrypted data (Change max size in the `config.json`). Ensure your tables can accommodate nvarchar or similar data types and have sufficient length.
 
 THIS IS NOT A HIGH SECURITY WRAPPER, IT IS SIMPLY A "DRAG AND DROP" LAZY SOLUTION, DO NOT USE THIS IN HIGH SECURITY APPLICATIONS.
 I wrote this for fun and to learn a little about how a database wrapper works.
