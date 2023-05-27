@@ -10,7 +10,6 @@ const key = Buffer.from(
 );
 const iv = Buffer.from(config.encryption.iv, "hex");
 
-// Add this function to your file
 function encrypt(text) {
     let cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
     let encrypted = cipher.update(text);
@@ -21,7 +20,6 @@ function encrypt(text) {
     };
 }
 
-// Add this function to your file
 function decrypt(encryptedText) {
     if(encryptedText == null) return null;
     if(!encryptedText.includes(config.settings.securedBuffer)) return encryptedText;
