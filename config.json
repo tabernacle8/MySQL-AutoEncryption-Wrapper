@@ -1,0 +1,18 @@
+{
+    "settings":{
+        "maxTableLength": 1000,
+        "securedBuffer": "SECURED:"
+    },
+
+    "database": {
+        "host": "localhost",
+        "user": "myuser",
+        "password": "mypassword",
+        "database": "mydatabase"
+    },
+
+    "encryption": {
+        "key": "(hex format) myencryptionkey",
+        "iv": "(hex format) myinitializationvector"
+    }
+}
