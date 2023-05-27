@@ -1,4 +1,4 @@
-# MySQL Database Encryption Wrapper
+# MySQL Database Auto-Encryption Wrapper
 
 This project is a Node.js based MySQL database wrapper with built-in automatic AES-256-CBC encryption.
 This wrapper allows you to write SQL queries as normal, but parameters are automatically encrypted and decrypted for you.
