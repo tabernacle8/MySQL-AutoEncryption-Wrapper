@@ -1,7 +1,13 @@
 {
-    "settings":{
+    "settings": {
         "maxTableLength": 1000,
         "securedBuffer": "SECURED:"
+    },
+
+    "security": {
+        "allowUnencryptedRemnants": true,
+        "allowDecryptionBypass": true,
+        "allowEmptyParams": true
     },
 
     "database": {

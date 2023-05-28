@@ -10,7 +10,9 @@ const key = Buffer.from(
 );
 const iv = Buffer.from(config.encryption.iv, "hex");
 
+// Add this function to your file
 function encrypt(text) {
+    try{
     let cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
     let encrypted = cipher.update(text);
     encrypted = Buffer.concat([encrypted, cipher.final()]);
@@ -18,17 +20,31 @@ function encrypt(text) {
         iv: iv.toString("hex"),
         encryptedData: encrypted.toString("hex")
     };
+    
+    }
+    catch(err){
+        throw err;
+    }
 }
 
+// Add this function to your file
 function decrypt(encryptedText) {
     if(encryptedText == null) return null;
-    if(!encryptedText.includes(config.settings.securedBuffer)) return encryptedText;
+    if(!encryptedText.includes(config.settings.securedBuffer) && config.security.allowDecryptionBypass) return encryptedText;
+
+    try{
     encryptedText = encryptedText.replace(config.settings.securedBuffer, "");
     let decipher = crypto.createDecipheriv(algorithm, Buffer.from(key), iv);
     let encryptedBuffer = Buffer.from(encryptedText, 'hex');
     let decrypted = decipher.update(encryptedBuffer);
     decrypted = Buffer.concat([decrypted, decipher.final()]);
     return decrypted.toString();
+    }
+
+    catch(err){
+        throw err;
+    }
+    
 }
 
 
@@ -40,6 +56,12 @@ exports.query = function (query, params, callback) {
         password: config.database.password,
         database: config.database.database,
     });
+
+    var unencryptedParams = null;
+    if(config.security.allowUnencryptedRemnants){
+        unencryptedParams = JSON.parse(JSON.stringify(params));;
+    }
+            
 
     //Encrypt each parameter and then pass it to the query
     for (var i = 0; i < params.length; i++) {
@@ -61,7 +83,7 @@ exports.query = function (query, params, callback) {
     }
 
     //Execute the query
-    if (params.length == 0) {
+    if (params.length == 0 && config.security.allowEmptyParams) {
         database.query(query, [], function (err, result) {
             if (err) {
                 callback(err, null);
@@ -82,7 +104,7 @@ exports.query = function (query, params, callback) {
         });
     } 
     
-    else {
+    else if(params.length>=1){
         database.query(query, params, function (err, result) {
             if (err) {
                 callback(err, null);
@@ -93,10 +115,30 @@ exports.query = function (query, params, callback) {
                         result[i][key] = decrypt(result[i][key]);
                     }
                 }
+
+                //If result is null, and unencryptedParams is true, try running query again but with unencrypted params
+                if (result.length == 0 && config.security.allowUnencryptedRemnants) {
+                    database.query(query, unencryptedParams, function (err, result) {
+                        if (err) {
+                            callback(err, null);
+                        } else {
+                            for (var i = 0; i < result.length; i++) {
+                                for (var key in result[i]) {
+                                    result[i][key] = decrypt(result[i][key]);
+                                }
+                            }
+                            callback(null, result);
+                            database.end();
+                        }
+                    });
+                }
+                else{
                 callback(null, result);
                 database.end();
+                }
             }
         });
+
     }
 };
 

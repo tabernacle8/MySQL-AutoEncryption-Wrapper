@@ -1,7 +1,8 @@
 # MySQL Database Auto-Encryption Wrapper
 
-This project is a Node.js based MySQL database wrapper with built-in automatic AES-256-CBC encryption.
+This project is a Node.js based MySQL database wrapper with built-in automatic AES-256-CBC encryption and encryption migration.
 This wrapper allows you to write SQL queries as normal, but parameters are automatically encrypted and decrypted for you.
+It can also automatically up-convert old databases to encrypted ones overtime
 
 It's mainly designed to teach myself about database wrappers and encryption. But it should work just fine for your newer projects too.
 
@@ -9,6 +10,7 @@ It's mainly designed to teach myself about database wrappers and encryption. But
 
 - Automatic encryption and decryption of parameters sent and received from the database.
 - Error handling for already encrypted parameters or oversized parameters.
+- Automatically handles databases with both unencrypted data and encrypted data (See config.json)
 
 ## Installation
 
@@ -44,13 +46,20 @@ db.query('SELECT * FROM users WHERE username = ?', ['username'], function(err, r
 This function takes in a SQL query string, an array of parameters, and a callback function.
 See `example.js` for more help 
 
-If you get an error titled: EVP_DecryptFinal_ex:bad decrypt, your encryption key does not match the one used to encrypt the data
+## Config Explanations
+
+- `allowUnencryptedRemnants` - Allow re-queries with unencrypted data if the original query returns null. (Leave true for compatibility with partially un-encrypted databases. This setting does lead to 2x memory usage)
+
+- `allowDecryptionBypass` - Skip decrypting data if it does not appear to be encrypted. (Leave true for compatibility with partially un-encrypted databases)
+
+- `allowEmptyParams` - Allow queries without parameters to be sent to the database
+
+- `securedBuffer` - Proceeded all text with this string before insertion to signal that it is encrypted. (Setting this to empty will prevent compatibility with partially un-encrypted databases)
+
 
 ## Restrictions
 
-This wrapper will cause problems if used on a pre-existing database that does not follow the conventions of this wrapper. All functions will work as expected if you use the wrapper from the start however.
-
-In addition, this wrapper may not work correctly if the columns in your database table are not designed to hold strings or have a character length limit that is too small for the encrypted data (Change max size in the `config.json`). Ensure your tables can accommodate nvarchar or similar data types and have sufficient length.
+This wrapper may not work correctly if the columns in your database table are not designed to hold strings or have a character length limit that is too small for the encrypted data (Change max size in the `config.json`). Ensure your tables can accommodate nvarchar or similar data types and have sufficient length.
 
 THIS IS NOT A HIGH SECURITY WRAPPER, IT IS SIMPLY A "DRAG AND DROP" LAZY SOLUTION, DO NOT USE THIS IN HIGH SECURITY APPLICATIONS.
 I wrote this for fun and to learn a little about how a database wrapper works.
