@@ -10,7 +10,7 @@ It's mainly designed to teach myself about database wrappers and encryption. But
 
 - Automatic encryption and decryption of parameters sent and received from the database.
 - Error handling for already encrypted parameters or oversized parameters.
-- Automatically handles databases with both unencrypted data and encrypted data (See config.json)
+- Automatically handles databases with both unencrypted data and encrypted data (See `wrapperConfig.json`)
 
 ## Installation
 
@@ -24,7 +24,7 @@ Then install the necessary Node.js dependencies:
 npm install mysql crypto
 ```
 
-Finally, edit the config.json file to match your database credentials and encryption key information.
+Finally, edit the `wrapperConfig.json` file to match your database credentials and encryption key information.
 (If you need a new low-security key, try using the keygen.js (insecure) file to generate one)
 
 ## Usage
@@ -59,7 +59,7 @@ See `example.js` for more help
 
 ## Restrictions
 
-This wrapper may not work correctly if the columns in your database table are not designed to hold strings or have a character length limit that is too small for the encrypted data (Change max size in the `config.json`). Ensure your tables can accommodate nvarchar or similar data types and have sufficient length.
+This wrapper may not work correctly if the columns in your database table are not designed to hold strings or have a character length limit that is too small for the encrypted data (Change max size in the `wrapperConfig.json`). Ensure your tables can accommodate nvarchar or similar data types and have sufficient length.
 
 This project assumes the iv value never changes, which is not how this encryption format is supposed to work. I'm probably going to change it later.
 
