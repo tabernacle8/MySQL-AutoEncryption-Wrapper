@@ -10,7 +10,7 @@ const key = Buffer.from(
 );
 const iv = Buffer.from(config.encryption.iv, "hex");
 
-// Add this function to your file
+
 function encrypt(text) {
     try{
     let cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
@@ -27,7 +27,7 @@ function encrypt(text) {
     }
 }
 
-// Add this function to your file
+
 function decrypt(encryptedText) {
     if(encryptedText == null) return null;
     if(!encryptedText.toString().includes(config.settings.securedBuffer) && config.security.allowDecryptionBypass) return encryptedText;
@@ -50,6 +50,7 @@ function decrypt(encryptedText) {
 
 exports.query = function (query, params, callback) {
 
+    //Establish connection
     var database = mysql.createConnection({
         host: config.database.host,
         user: config.database.user,
@@ -57,6 +58,7 @@ exports.query = function (query, params, callback) {
         database: config.database.database,
     });
 
+    //Duplicate params for unencrypted checks
     var unencryptedParams = null;
     if(config.security.allowUnencryptedRemnants){
         unencryptedParams = JSON.parse(JSON.stringify(params));;
@@ -73,7 +75,7 @@ exports.query = function (query, params, callback) {
         params[i] = config.settings.securedBuffer+(encrypt(params[i].toString()).encryptedData);
     }
 
-    //If any params are over 500 characters, log and stop the query
+    //If any params are over X characters, log and stop the query
     for (var i = 0; i < params.length; i++) {
         if (params[i].length > config.settings.maxTableLength) {
             callback("Query failed: parameter " + i + " is too long", null);
@@ -82,7 +84,7 @@ exports.query = function (query, params, callback) {
         }
     }
 
-    //Execute the query
+    //Execute the query with length 0
     if (params.length == 0 && config.security.allowEmptyParams) {
         database.query(query, [], function (err, result) {
             if (err) {
@@ -93,6 +95,8 @@ exports.query = function (query, params, callback) {
                     database.end();
                     return;
                 }
+
+                //Decrypt and publish results
                 for (var i = 0; i < result.length; i++) {
                     for (var key in result[i]) {
                         result[i][key] = decrypt(result[i][key]);
@@ -104,12 +108,15 @@ exports.query = function (query, params, callback) {
         });
     } 
     
+    //Execute the query with length 1 or more
     else if(params.length>=1){
         database.query(query, params, function (err, result) {
             if (err) {
                 callback(err, null);
                 database.end();
             } else {
+
+                //Decrypt and publish results
                 for (var i = 0; i < result.length; i++) {
                     for (var key in result[i]) {
                         result[i][key] = decrypt(result[i][key]);
