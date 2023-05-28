@@ -61,6 +61,8 @@ See `example.js` for more help
 
 This wrapper may not work correctly if the columns in your database table are not designed to hold strings or have a character length limit that is too small for the encrypted data (Change max size in the `config.json`). Ensure your tables can accommodate nvarchar or similar data types and have sufficient length.
 
+This project assumes the iv value never changes, which is not how this encryption format is supposed to work. I'm probably going to change it later.
+
 THIS IS NOT A HIGH SECURITY WRAPPER, IT IS SIMPLY A "DRAG AND DROP" LAZY SOLUTION, DO NOT USE THIS IN HIGH SECURITY APPLICATIONS.
 I wrote this for fun and to learn a little about how a database wrapper works.
 (But frankly, you already knew this, just wanted to make it extra clear)

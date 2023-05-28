@@ -19,6 +19,7 @@
 
     "encryption": {
         "key": "(hex format) myencryptionkey",
-        "iv": "(hex format) myinitializationvector"
+        "iv": "(hex format) myinitializationvector",
+        "_comment": "Yes, I know the iv is supposed to be random/unique. I hope to implement this later"
     }
 }
