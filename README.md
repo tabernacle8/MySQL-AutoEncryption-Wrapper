@@ -2,7 +2,7 @@
 
 This project is a Node.js based MySQL database wrapper with built-in automatic AES-256-CBC encryption and encryption migration.
 This wrapper allows you to write SQL queries as normal, but parameters are automatically encrypted and decrypted for you.
-It can also automatically up-convert old databases to encrypted ones overtime
+It can also work interchangeably with an old database that has both encrypted and unencrypted data.
 
 It's mainly designed to teach myself about database wrappers and encryption. But it should work just fine for your newer projects too.
 

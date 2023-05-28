@@ -1,6 +1,6 @@
 const mysql = require("mysql");
 const crypto = require("crypto");
-const config = require('./config.json');
+const config = require('./wrapperConfig.json');
 
 
 const algorithm = "aes-256-cbc";
@@ -30,7 +30,7 @@ function encrypt(text) {
 // Add this function to your file
 function decrypt(encryptedText) {
     if(encryptedText == null) return null;
-    if(!encryptedText.includes(config.settings.securedBuffer) && config.security.allowDecryptionBypass) return encryptedText;
+    if(!encryptedText.toString().includes(config.settings.securedBuffer) && config.security.allowDecryptionBypass) return encryptedText;
 
     try{
     encryptedText = encryptedText.replace(config.settings.securedBuffer, "");
@@ -117,7 +117,7 @@ exports.query = function (query, params, callback) {
                 }
 
                 //If result is null, and unencryptedParams is true, try running query again but with unencrypted params
-                if (result.length == 0 && config.security.allowUnencryptedRemnants) {
+                if ((result.length == 0 || result.affectedRows === 0) && config.security.allowUnencryptedRemnants) {
                     database.query(query, unencryptedParams, function (err, result) {
                         if (err) {
                             callback(err, null);
