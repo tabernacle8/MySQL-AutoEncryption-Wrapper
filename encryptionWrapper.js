@@ -12,19 +12,10 @@ const iv = Buffer.from(config.encryption.iv, "hex");
 
 
 function encrypt(text) {
-    try{
     let cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
     let encrypted = cipher.update(text);
     encrypted = Buffer.concat([encrypted, cipher.final()]);
-    return {
-        iv: iv.toString("hex"),
-        encryptedData: encrypted.toString("hex")
-    };
-    
-    }
-    catch(err){
-        throw err;
-    }
+    return(encrypted.toString("hex"));
 }
 
 
@@ -32,19 +23,13 @@ function decrypt(encryptedText) {
     if(encryptedText == null) return null;
     if(!encryptedText.toString().includes(config.settings.securedBuffer) && config.security.allowDecryptionBypass) return encryptedText;
 
-    try{
+
     encryptedText = encryptedText.replace(config.settings.securedBuffer, "");
     let decipher = crypto.createDecipheriv(algorithm, Buffer.from(key), iv);
     let encryptedBuffer = Buffer.from(encryptedText, 'hex');
     let decrypted = decipher.update(encryptedBuffer);
     decrypted = Buffer.concat([decrypted, decipher.final()]);
     return decrypted.toString();
-    }
-
-    catch(err){
-        throw err;
-    }
-    
 }
 
 
@@ -74,15 +59,23 @@ exports.query = function (query, params, callback) {
             return;
         }
 
-        var encryptedParam = config.settings.securedBuffer+(encrypt(params[i].toString()).encryptedData);
+        try{
+            var encryptedParam = config.settings.securedBuffer+(encrypt(params[i].toString()));
 
-        if (encryptedParam.length > config.settings.maxTableLength) {
-            callback("Query failed: parameter " + i + " is too long", null);
+            if (encryptedParam.length > config.settings.maxTableLength) {
+                callback("Query failed: parameter " + i + " is too long", null);
+                database.end();
+                return;
+            }
+
+            params[i] = encryptedParam;
+        }
+
+        catch(err){
+            callback("Query failed: parameter " + i + " failed to encrypt", null);
             database.end();
             return;
         }
-
-        params[i] = encryptedParam;
     }
 
     //Execute the query with length 0
@@ -100,7 +93,15 @@ exports.query = function (query, params, callback) {
                 //Decrypt and publish results
                 for (var i = 0; i < result.length; i++) {
                     for (var key in result[i]) {
+                        
+                        try{
                         result[i][key] = decrypt(result[i][key]);
+                        }
+                        catch(err){
+                            callback("Query failed: parameter " + i + " failed to decrypt", null);
+                            database.end();
+                            return;
+                        }
                     }
                 }
                 callback(null, result);
@@ -120,7 +121,15 @@ exports.query = function (query, params, callback) {
                 //Decrypt and publish results
                 for (var i = 0; i < result.length; i++) {
                     for (var key in result[i]) {
+                        
+                        try{
                         result[i][key] = decrypt(result[i][key]);
+                        }
+                        catch(err){
+                            callback("Query failed: parameter " + i + " failed to decrypt", null);
+                            database.end();
+                            return;
+                        }
                     }
                 }
 
@@ -132,7 +141,15 @@ exports.query = function (query, params, callback) {
                         } else {
                             for (var i = 0; i < result.length; i++) {
                                 for (var key in result[i]) {
+
+                                    try{
                                     result[i][key] = decrypt(result[i][key]);
+                                    }
+                                    catch(err){
+                                        callback("Query failed: parameter " + i + " failed to decrypt", null);
+                                        database.end();
+                                        return;
+                                    }
                                 }
                             }
                             callback(null, result);
