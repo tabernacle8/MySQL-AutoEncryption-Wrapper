@@ -35,14 +35,6 @@ function decrypt(encryptedText) {
 
 exports.query = function (query, params, callback) {
 
-    //Establish connection
-    var database = mysql.createConnection({
-        host: config.database.host,
-        user: config.database.user,
-        password: config.database.password,
-        database: config.database.database,
-    });
-
     //Duplicate params for unencrypted checks
     var unencryptedParams = null;
     if(config.security.allowUnencryptedRemnants){
@@ -55,7 +47,6 @@ exports.query = function (query, params, callback) {
 
         if(params[i].toString().includes(config.settings.securedBuffer)){
             callback("Query failed: parameter " + i + " is already encrypted", null);
-            database.end();
             return;
         }
 
@@ -64,7 +55,6 @@ exports.query = function (query, params, callback) {
 
             if (encryptedParam.length > config.settings.maxTableLength) {
                 callback("Query failed: parameter " + i + " is too long", null);
-                database.end();
                 return;
             }
 
@@ -73,10 +63,17 @@ exports.query = function (query, params, callback) {
 
         catch(err){
             callback("Query failed: parameter " + i + " failed to encrypt", null);
-            database.end();
             return;
         }
     }
+
+    //Establish connection
+    var database = mysql.createConnection({
+        host: config.database.host,
+        user: config.database.user,
+        password: config.database.password,
+        database: config.database.database,
+    });
 
     //Execute the query with length 0
     if (params.length == 0 && config.security.allowEmptyParams) {
@@ -93,7 +90,7 @@ exports.query = function (query, params, callback) {
                 //Decrypt and publish results
                 for (var i = 0; i < result.length; i++) {
                     for (var key in result[i]) {
-                        
+
                         try{
                         result[i][key] = decrypt(result[i][key]);
                         }

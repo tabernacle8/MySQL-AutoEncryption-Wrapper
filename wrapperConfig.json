@@ -7,7 +7,8 @@
     "security": {
         "allowUnencryptedRemnants": true,
         "allowDecryptionBypass": true,
-        "allowEmptyParams": true
+        "allowEmptyParams": true,
+        "allowQueryComments": false
     },
 
     "database": {
