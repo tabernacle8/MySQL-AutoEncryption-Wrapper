@@ -35,6 +35,12 @@ function decrypt(encryptedText) {
 
 exports.query = function (query, params, callback) {
 
+    //Comment check
+    if(!config.security.allowQueryComments && (query.includes("--") ||query.includes("/*") || query.includes("*/"))){
+        callback("Query failed: config does not permit query comments", null);
+        return;
+    }
+
     //Duplicate params for unencrypted checks
     var unencryptedParams = null;
     if(config.security.allowUnencryptedRemnants){
