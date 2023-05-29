@@ -67,21 +67,22 @@ exports.query = function (query, params, callback) {
 
     //Encrypt each parameter and then pass it to the query
     for (var i = 0; i < params.length; i++) {
+
         if(params[i].toString().includes(config.settings.securedBuffer)){
             callback("Query failed: parameter " + i + " is already encrypted", null);
             database.end();
             return;
         }
-        params[i] = config.settings.securedBuffer+(encrypt(params[i].toString()).encryptedData);
-    }
 
-    //If any params are over X characters, log and stop the query
-    for (var i = 0; i < params.length; i++) {
-        if (params[i].length > config.settings.maxTableLength) {
+        var encryptedParam = config.settings.securedBuffer+(encrypt(params[i].toString()).encryptedData);
+
+        if (encryptedParam.length > config.settings.maxTableLength) {
             callback("Query failed: parameter " + i + " is too long", null);
             database.end();
             return;
         }
+
+        params[i] = encryptedParam;
     }
 
     //Execute the query with length 0
