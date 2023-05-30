@@ -52,7 +52,7 @@ exports.query = function (query, params, callback) {
     for (var i = 0; i < params.length; i++) {
 
         if(params[i].toString().includes(config.settings.securedBuffer)){
-            callback("Query failed: parameter " + i + " is already encrypted", null);
+            callback("Query failed: parameter is already encrypted", null);
             return;
         }
 
@@ -60,7 +60,7 @@ exports.query = function (query, params, callback) {
             var encryptedParam = config.settings.securedBuffer+(encrypt(params[i].toString()));
 
             if (encryptedParam.length > config.settings.maxTableLength) {
-                callback("Query failed: parameter " + i + " is too long", null);
+                callback("Query failed: parameter is too long", null);
                 return;
             }
 
@@ -68,7 +68,7 @@ exports.query = function (query, params, callback) {
         }
 
         catch(err){
-            callback("Query failed: parameter " + i + " failed to encrypt", null);
+            callback("Query failed: parameter failed to encrypt", null);
             return;
         }
     }
@@ -101,7 +101,7 @@ exports.query = function (query, params, callback) {
                         result[i][key] = decrypt(result[i][key]);
                         }
                         catch(err){
-                            callback("Query failed: parameter " + i + " failed to decrypt", null);
+                            callback("Query failed: parameter failed to decrypt", null);
                             database.end();
                             return;
                         }
@@ -129,7 +129,7 @@ exports.query = function (query, params, callback) {
                         result[i][key] = decrypt(result[i][key]);
                         }
                         catch(err){
-                            callback("Query failed: parameter " + i + " failed to decrypt", null);
+                            callback("Query failed: parameter failed to decrypt", null);
                             database.end();
                             return;
                         }
@@ -149,7 +149,7 @@ exports.query = function (query, params, callback) {
                                     result[i][key] = decrypt(result[i][key]);
                                     }
                                     catch(err){
-                                        callback("Query failed: parameter " + i + " failed to decrypt", null);
+                                        callback("Query failed: parameter failed to decrypt", null);
                                         database.end();
                                         return;
                                     }
