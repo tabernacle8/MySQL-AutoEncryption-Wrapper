@@ -56,6 +56,8 @@ See `example.js` for more help
 
 - `securedBuffer` - Proceeded all text with this string before insertion to signal that it is encrypted. (Setting this to empty will prevent compatibility with partially un-encrypted databases)
 
+- `allowQueryComments` - Allow queries to contain comments
+
 
 ## Restrictions
 
