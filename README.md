@@ -27,7 +27,7 @@ npm install mysql crypto
 Finally, edit the `wrapperConfig.json` file to match your database credentials and encryption key information.
 (If you need a new low-security key, try using the keygen.js (insecure) file to generate one)
 
-If you are using this on a completely new database, set all security fields to false and `securedBuffer` to empty.
+If you are using this on a completely new database, set all security group config settings to false and `securedBuffer` to empty.
 
 ## Usage
 
