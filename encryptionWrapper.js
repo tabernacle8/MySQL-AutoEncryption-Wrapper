@@ -82,35 +82,42 @@ exports.query = function (query, params, callback) {
     });
 
     //Execute the query with length 0
-    if (params.length == 0 && config.security.allowEmptyParams) {
-        database.query(query, [], function (err, result) {
-            if (err) {
-                callback(err, null);
-            } else {
-                if (result.length == 0) {
-                    callback(null, null);
-                    database.end();
-                    return;
-                }
+    if (params.length == 0) {
+        if(config.security.allowEmptyParams){
+            database.query(query, [], function (err, result) {
+                if (err) {
+                    callback(err, null);
+                } else {
+                    if (result.length == 0) {
+                        callback(null, null);
+                        database.end();
+                        return;
+                    }
 
-                //Decrypt and publish results
-                for (var i = 0; i < result.length; i++) {
-                    for (var key in result[i]) {
+                    //Decrypt and publish results
+                    for (var i = 0; i < result.length; i++) {
+                        for (var key in result[i]) {
 
-                        try{
-                        result[i][key] = decrypt(result[i][key]);
-                        }
-                        catch(err){
-                            callback("Query failed: parameter failed to decrypt", null);
-                            database.end();
-                            return;
+                            try{
+                            result[i][key] = decrypt(result[i][key]);
+                            }
+                            catch(err){
+                                callback("Query failed: parameter failed to decrypt", null);
+                                database.end();
+                                return;
+                            }
                         }
                     }
+                    callback(null, result);
+                    database.end();
                 }
-                callback(null, result);
-                database.end();
-            }
-        });
+            });
+        }
+        else{
+            callback("Query failed: config does not permit queries with empty parameters", null);
+            database.end();
+            return;
+        }
     } 
     
     //Execute the query with length 1 or more
