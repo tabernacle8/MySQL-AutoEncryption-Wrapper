@@ -60,6 +60,8 @@ See `example.js` for more help
 
 - `allowQueryComments` - Allow queries to contain comments
 
+- `returnVagueErrors` - Return vague errors instead of detailed errors
+
 
 ## Restrictions
 

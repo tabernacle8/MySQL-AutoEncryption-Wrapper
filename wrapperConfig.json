@@ -8,7 +8,8 @@
         "allowUnencryptedRemnants": true,
         "allowDecryptionBypass": true,
         "allowEmptyParams": true,
-        "allowQueryComments": false
+        "allowQueryComments": false,
+        "returnVagueErrors": false
     },
 
     "database": {

@@ -86,6 +86,9 @@ exports.query = function (query, params, callback) {
         if(config.security.allowEmptyParams){
             database.query(query, [], function (err, result) {
                 if (err) {
+                    if(config.security.returnVagueErrors){
+                        err = "Query failed: "+err.code;
+                    }
                     callback(err, null);
                 } else {
                     if (result.length == 0) {
@@ -124,6 +127,9 @@ exports.query = function (query, params, callback) {
     else if(params.length>=1){
         database.query(query, params, function (err, result) {
             if (err) {
+                if(config.security.returnVagueErrors){
+                    err = "Query failed: "+err.code;
+                }
                 callback(err, null);
                 database.end();
             } else {
@@ -147,6 +153,9 @@ exports.query = function (query, params, callback) {
                 if ((result.length == 0 || result.affectedRows === 0) && config.security.allowUnencryptedRemnants) {
                     database.query(query, unencryptedParams, function (err, result) {
                         if (err) {
+                            if(config.security.returnVagueErrors){
+                                err = "Query failed: "+err.code;
+                            }
                             callback(err, null);
                         } else {
                             for (var i = 0; i < result.length; i++) {
