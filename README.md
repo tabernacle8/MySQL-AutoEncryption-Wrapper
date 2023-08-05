@@ -62,6 +62,8 @@ See `example.js` for more help
 
 - `returnVagueErrors` - Return vague errors instead of detailed errors
 
+- `reduceTextSize` - Use base64 encoding
+
 
 ## Restrictions
 
