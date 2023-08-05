@@ -1,37 +1,34 @@
 const mysql = require("mysql");
 const crypto = require("crypto");
 const config = require('./wrapperConfig.json');
+const algorithm = "aes-256-gcm";
+const key = Buffer.from(config.encryption.key, "hex");
 
-
-const algorithm = "aes-256-cbc";
-const key = Buffer.from(
-    config.encryption.key,
-    "hex"
-);
-const iv = Buffer.from(config.encryption.iv, "hex");
-
+function generateIV(plaintext) {
+    const hash = crypto.createHmac('sha256', config.encryption.secondkey).update(plaintext).digest();
+    return hash.slice(0, 12); // Truncate to the appropriate length for the IV
+}
 
 function encrypt(text) {
-    let cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
-    let encrypted = cipher.update(text);
+    const iv = generateIV(text);
+    const cipher = crypto.createCipheriv(algorithm, key, iv);
+    let encrypted = cipher.update(text, 'utf8');
     encrypted = Buffer.concat([encrypted, cipher.final()]);
-    return(encrypted.toString("hex"));
+    const authTag = cipher.getAuthTag();
+    const encryptedBuffer = Buffer.concat([iv, authTag, encrypted]);
+    return config.settings.reduceTextSize ? encryptedBuffer.toString('base64') : encryptedBuffer.toString('hex');
 }
-
 
 function decrypt(encryptedText) {
-    if(encryptedText == null) return null;
-    if(!encryptedText.toString().includes(config.settings.securedBuffer) && config.security.allowDecryptionBypass) return encryptedText;
-
-
+    if (encryptedText == null || (!encryptedText.includes(config.settings.securedBuffer) && config.security.allowDecryptionBypass)) return encryptedText;
     encryptedText = encryptedText.replace(config.settings.securedBuffer, "");
-    let decipher = crypto.createDecipheriv(algorithm, Buffer.from(key), iv);
-    let encryptedBuffer = Buffer.from(encryptedText, 'hex');
-    let decrypted = decipher.update(encryptedBuffer);
-    decrypted = Buffer.concat([decrypted, decipher.final()]);
-    return decrypted.toString();
+    const inputFormat = config.settings.reduceTextSize ? 'base64' : 'hex';
+    encryptedText = Buffer.from(encryptedText, inputFormat);
+    const iv = encryptedText.slice(0, 12);
+    const decipher = crypto.createDecipheriv(algorithm, key, iv);
+    decipher.setAuthTag(encryptedText.slice(12, 28));
+    return decipher.update(encryptedText.slice(28), null, 'utf8') + decipher.final('utf8');
 }
-
 
 exports.query = function (query, params, callback) {
 

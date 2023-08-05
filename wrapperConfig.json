@@ -1,7 +1,8 @@
 {
     "settings": {
         "maxTableLength": 1000,
-        "securedBuffer": "SECURED:"
+        "securedBuffer": "SECURED:",
+        "reduceTextSize": true
     },
 
     "security": {
@@ -9,7 +10,7 @@
         "allowDecryptionBypass": true,
         "allowEmptyParams": true,
         "allowQueryComments": false,
-        "returnVagueErrors": false
+        "returnVagueErrors": true
     },
 
     "database": {
@@ -21,7 +22,7 @@
 
     "encryption": {
         "key": "(hex format) myencryptionkey",
-        "iv": "(hex format) myinitializationvector",
+        "secondkey": "(hex format) myencryptionkey2",
         "_comment": "Yes, I know the iv is supposed to be random/unique. I hope to implement this later"
     }
 }
