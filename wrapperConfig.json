@@ -10,7 +10,8 @@
         "allowDecryptionBypass": true,
         "allowEmptyParams": true,
         "allowQueryComments": false,
-        "returnVagueErrors": true
+        "returnVagueErrors": true,
+        "enforceParamCount": true
     },
 
     "database": {

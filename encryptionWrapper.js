@@ -43,6 +43,12 @@ exports.query = function (query, params, callback) {
     if(config.security.allowUnencryptedRemnants){
         unencryptedParams = JSON.parse(JSON.stringify(params));;
     }
+
+    //Make sure number of params matches number of ? in query
+    if (params.length != query.split("?").length - 1 && config.security.enforceParamCount) {
+        callback("Query failed: parameter count does not match query", null);
+        return;
+    }
             
 
     //Encrypt each parameter and then pass it to the query
