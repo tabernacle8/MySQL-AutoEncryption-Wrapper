@@ -71,7 +71,6 @@ This wrapper may not work correctly if the columns in your database table are no
 
 This project assumes the iv value never changes, which is not how this encryption format is supposed to work. I'm probably going to change it later.
 
-THIS IS NOT A HIGH SECURITY WRAPPER, IT IS SIMPLY A "DRAG AND DROP" LAZY SOLUTION, DO NOT USE THIS IN HIGH SECURITY APPLICATIONS.
 I wrote this for fun and to learn a little about how a database wrapper works.
 (But frankly, you already knew this, just wanted to make it extra clear)
 
